@@ -4,11 +4,9 @@ import { Job } from "../cache.js";
 // Lever posts jobs at api.lever.co/v0/postings/{company}
 // We'll query multiple companies that use Lever
 const LEVER_COMPANIES = [
-  "netflix",
-  "shopify",
-  "leverage",
-  "figma",
-  "notion",
+  "unlimit",
+  "spotify",
+  "kraken",
 ];
 
 export const leverApi = {
@@ -49,9 +47,10 @@ export const leverApi = {
 
         allJobs.push(...jobs);
       } catch (error) {
-        // Silently continue if one company's API fails
-        console.error(`Failed to fetch from ${company}:`, error instanceof Error ? error.message : "Unknown");
-      }
+  // Silently skip companies that don't have public API (404) or timeouts
+  // Uncomment below for debugging:
+  // console.error(`Failed to fetch from ${company}:`, error instanceof Error ? error.message : "Unknown");
+    }
     }
 
     return allJobs;
