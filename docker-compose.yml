@@ -1,0 +1,12 @@
+services:
+  job-board-mcp:
+    build: .
+    image: job-board-mcp:latest
+    container_name: job-board-mcp
+    environment:
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+    volumes:
+      - ./data:/app/data
+    stdin_open: true
+    tty: true
