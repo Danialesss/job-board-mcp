@@ -1,9 +1,14 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
+import rateLimit from "express-rate-limit";
+import path from "path";
+import { fileURLToPath } from "url";
 import { searchJobs } from "./tools/searchJobs.js";
 import { getJobDetails } from "./tools/getJobDetails.js";
 import { initializeCache } from "./datasources/cache.js";
-import rateLimit from "express-rate-limit";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,7 +20,7 @@ app.use(express.json());
 // Rate limiting - prevent API abuse
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Max 100 requests per window per IP
+  max: 100,
   message: {
     error: "Too many requests",
     message: "Please try again in 15 minutes",
@@ -26,7 +31,7 @@ const apiLimiter = rateLimit({
 
 const searchLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 10, // Max 10 searches per minute per IP
+  max: 10,
   message: {
     error: "Too many search requests",
     message: "Please slow down, max 10 searches per minute",
@@ -39,19 +44,23 @@ app.use("/api", apiLimiter);
 // Initialize cache
 initializeCache();
 
-// Health check endpoint (Render uses this to verify service is alive)
+// Serve static frontend from /public
+app.use(express.static(path.join(__dirname, "../public")));
+
+// Health check endpoint
 app.get("/health", (req: Request, res: Response) => {
   res.json({ status: "healthy", timestamp: new Date().toISOString() });
 });
 
-// Root endpoint with API documentation
-app.get("/", (req: Request, res: Response) => {
+// API documentation endpoint
+app.get("/api", (req: Request, res: Response) => {
   res.json({
     name: "Job Board MCP HTTP API",
     version: "1.0.0",
     description: "REST API wrapper for the Job Board MCP Server",
     endpoints: {
-      "GET /": "This documentation",
+      "GET /": "Frontend UI",
+      "GET /api": "This documentation",
       "GET /health": "Health check",
       "GET /api/search": "Search jobs. Query params: query (required), location, limit",
       "GET /api/jobs/:jobId": "Get details for a specific job",
@@ -64,7 +73,7 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
-// Search jobs endpoint (extra rate limit)
+// Search jobs endpoint (with extra rate limit)
 app.get("/api/search", searchLimiter, async (req: Request, res: Response) => {
   try {
     const query = req.query.query as string;
@@ -95,7 +104,7 @@ app.get("/api/search", searchLimiter, async (req: Request, res: Response) => {
 // Get job details endpoint
 app.get("/api/jobs/:jobId", async (req: Request, res: Response) => {
   try {
-   const jobId = req.params.jobId as string;
+    const jobId = req.params.jobId as string;
     const result = await getJobDetails({ jobId });
 
     if (result.isError) {
@@ -120,6 +129,7 @@ app.get("/api/jobs/:jobId", async (req: Request, res: Response) => {
 // Start the HTTP server
 app.listen(PORT, () => {
   console.log(`🚀 Job Board HTTP API running on port ${PORT}`);
+  console.log(`🌐 Frontend UI: http://localhost:${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
   console.log(`🔍 Search jobs: http://localhost:${PORT}/api/search?query=Engineer`);
 });

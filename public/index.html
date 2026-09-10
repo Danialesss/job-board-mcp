@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Board MCP - Search Jobs Across Multiple Platforms</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    header p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+
+    .badges {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .badge {
+      background: rgba(255,255,255,0.2);
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: white;
+      backdrop-filter: blur(10px);
+    }
+
+    .search-card {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      margin-bottom: 30px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 100px auto;
+      gap: 15px;
+      align-items: end;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #555;
+      font-size: 0.9rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    button {
+      padding: 12px 30px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .loader {
+      display: none;
+      text-align: center;
+      padding: 40px;
+      color: white;
+    }
+
+    .loader.active {
+      display: block;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .results {
+      display: grid;
+      gap: 15px;
+    }
+
+    .results-header {
+      background: rgba(255,255,255,0.15);
+      padding: 15px 20px;
+      border-radius: 10px;
+      color: white;
+      backdrop-filter: blur(10px);
+      margin-bottom: 5px;
+    }
+
+    .job-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .job-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .job-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .job-company {
+      font-size: 1.05rem;
+      color: #667eea;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .job-meta {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .job-meta span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .source-tag {
+      display: inline-block;
+      padding: 3px 10px;
+      background: #f0f0f0;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .source-lever { background: #ffd6cc; color: #cc4400; }
+    .source-greenhouse { background: #d4f4d4; color: #2d7d2d; }
+    .source-remoteok { background: #cce5ff; color: #0056b3; }
+
+    .apply-btn {
+      display: inline-block;
+      padding: 10px 25px;
+      background: #667eea;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .apply-btn:hover {
+      background: #5568d3;
+    }
+
+    .error {
+      background: #fff;
+      color: #d32f2f;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    footer {
+      text-align: center;
+      color: white;
+      margin-top: 40px;
+      padding: 20px;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    footer a {
+      color: white;
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      header h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🚀 Job Board MCP</h1>
+      <p>Search jobs across Lever, Greenhouse, and RemoteOK in one place</p>
+      <div class="badges">
+        <span class="badge">3 Sources</span>
+        <span class="badge">1000+ Jobs</span>
+        <span class="badge">Real-time</span>
+      </div>
+    </header>
+
+    <div class="search-card">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="query">Job Title / Keyword</label>
+          <input type="text" id="query" placeholder="e.g., Cloud Engineer, DevOps" value="Engineer">
+        </div>
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input type="text" id="location" placeholder="e.g., Remote, London" value="Remote">
+        </div>
+        <div class="form-group">
+          <label for="limit">Results</label>
+          <select id="limit">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+          </select>
+        </div>
+        <button id="searchBtn" onclick="searchJobs()">Search</button>
+      </div>
+    </div>
+
+    <div id="loader" class="loader">
+      <div class="spinner"></div>
+      <p style="margin-top: 15px;">Searching across job platforms...</p>
+    </div>
+
+    <div id="results" class="results"></div>
+
+    <footer>
+      <p>Built with ❤️ by <a href="https://github.com/Danialesss" target="_blank">Tun Danial</a> | <a href="https://github.com/Danialesss/job-board-mcp" target="_blank">View on GitHub</a></p>
+    </footer>
+  </div>
+
+  <script>
+    const API_BASE = window.location.origin;
+
+    async function searchJobs() {
+      const query = document.getElementById('query').value.trim();
+      const location = document.getElementById('location').value.trim() || 'Remote';
+      const limit = document.getElementById('limit').value;
+      const btn = document.getElementById('searchBtn');
+      const loader = document.getElementById('loader');
+      const results = document.getElementById('results');
+
+      if (!query) {
+        alert('Please enter a job title or keyword');
+        return;
+      }
+
+      btn.disabled = true;
+      loader.classList.add('active');
+      results.innerHTML = '';
+
+      try {
+        const response = await fetch(`${API_BASE}/api/search?query=${encodeURIComponent(query)}&location=${encodeURIComponent(location)}&limit=${limit}`);
+        const data = await response.json();
+
+        if (!data.success) {
+          throw new Error(data.error || 'Search failed');
+        }
+
+        renderResults(data.data);
+      } catch (error) {
+        results.innerHTML = `<div class="error">❌ ${error.message}</div>`;
+      } finally {
+        btn.disabled = false;
+        loader.classList.remove('active');
+      }
+    }
+
+    function renderResults(dataText) {
+      const results = document.getElementById('results');
+      
+      // Parse the text response into structured job data
+      const lines = dataText.split('\n');
+      const headerMatch = lines[0].match(/Found (\d+) job listings.*\((.*)\)/);
+      
+      let html = '';
+      if (headerMatch) {
+        html += `<div class="results-header">🎯 <strong>${headerMatch[1]} jobs found</strong> — ${headerMatch[2]}</div>`;
+      }
+
+      // Split jobs (they start with "• **")
+      const jobs = dataText.split('• **').slice(1);
+      
+      jobs.forEach(jobText => {
+        const titleMatch = jobText.match(/^(.+?)\*\* at (.+?)\n/);
+        const locationMatch = jobText.match(/📍 (.+?)\n/);
+        const sourceMatch = jobText.match(/💼 Source: (\w+)/);
+        const urlMatch = jobText.match(/🔗 (https?:\/\/[^\n]+)/);
+        
+        if (titleMatch) {
+          const title = titleMatch[1];
+          const company = titleMatch[2];
+          const location = locationMatch ? locationMatch[1] : 'Not specified';
+          const source = sourceMatch ? sourceMatch[1] : 'unknown';
+          const url = urlMatch ? urlMatch[1] : '#';
+
+          html += `
+            <div class="job-card">
+              <div class="job-title">${escapeHtml(title)}</div>
+              <div class="job-company">${escapeHtml(company)}</div>
+              <div class="job-meta">
+                <span>📍 ${escapeHtml(location)}</span>
+                <span class="source-tag source-${source}">${source}</span>
+              </div>
+              <a href="${escapeHtml(url)}" target="_blank" class="apply-btn">Apply Now →</a>
+            </div>
+          `;
+        }
+      });
+
+      results.innerHTML = html || '<div class="error">No jobs found. Try a different search.</div>';
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Search on Enter key
+    document.getElementById('query').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') searchJobs();
+    });
+    document.getElementById('location').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') searchJobs();
+    });
+
+    // Auto-search on load
+    window.addEventListener('load', () => setTimeout(searchJobs, 500));
+  </script>
+</body>
+</html>
