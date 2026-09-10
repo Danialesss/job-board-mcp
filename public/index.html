@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Job Board MCP - Search Jobs Across Multiple Platforms</title>
+  <title>Job Board MCP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -11,118 +14,177 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --bg: #000;
+      --bg-elevated: #0a0a0a;
+      --border: #1a1a1a;
+      --border-hover: #2a2a2a;
+      --text: #ededed;
+      --text-secondary: #a1a1a1;
+      --text-tertiary: #666;
+      --accent: #fff;
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
-      color: #333;
+      -webkit-font-smoothing: antialiased;
+      letter-spacing: -0.01em;
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 60px 24px 40px;
     }
 
+    /* Header */
     header {
-      text-align: center;
-      color: white;
-      margin-bottom: 40px;
+      margin-bottom: 60px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 40px;
     }
 
-    header h1 {
-      font-size: 3rem;
-      margin-bottom: 10px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-    }
-
-    header p {
-      font-size: 1.2rem;
-      opacity: 0.9;
-      margin-bottom: 20px;
-    }
-
-    .badges {
+    .logo {
       display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
       justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 15px;
+      color: var(--bg);
+      font-weight: 700;
+      font-size: 18px;
     }
 
-    .badge {
-      background: rgba(255,255,255,0.2);
-      padding: 5px 15px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      color: white;
-      backdrop-filter: blur(10px);
+    .logo-text {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
     }
 
-    .search-card {
-      background: white;
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-      margin-bottom: 30px;
+    h1 {
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      margin-bottom: 16px;
+      line-height: 1.05;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: var(--text-secondary);
+      max-width: 640px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 32px;
+      font-family: 'Geist Mono', monospace;
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stat-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    /* Search Form */
+    .search-form {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
     }
 
     .form-grid {
       display: grid;
       grid-template-columns: 2fr 1fr 100px auto;
-      gap: 15px;
+      gap: 12px;
       align-items: end;
     }
 
     .form-group label {
       display: block;
       margin-bottom: 8px;
-      font-weight: 600;
-      color: #555;
-      font-size: 0.9rem;
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-family: 'Geist Mono', monospace;
+      text-transform: lowercase;
     }
 
     input, select {
       width: 100%;
-      padding: 12px 15px;
-      border: 2px solid #e0e0e0;
+      padding: 12px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
       border-radius: 8px;
-      font-size: 1rem;
-      transition: border-color 0.2s;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.15s;
     }
 
     input:focus, select:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: var(--text-tertiary);
+    }
+
+    input::placeholder {
+      color: var(--text-tertiary);
     }
 
     button {
-      padding: 12px 30px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
+      padding: 12px 24px;
+      background: var(--accent);
+      color: var(--bg);
       border: none;
       border-radius: 8px;
-      font-size: 1rem;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+      font-family: inherit;
+      transition: opacity 0.15s;
     }
 
     button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+      opacity: 0.85;
     }
 
     button:disabled {
-      opacity: 0.6;
+      opacity: 0.5;
       cursor: not-allowed;
     }
 
+    /* Loader */
     .loader {
       display: none;
+      padding: 60px 20px;
       text-align: center;
-      padding: 40px;
-      color: white;
     }
 
     .loader.active {
@@ -131,131 +193,179 @@
 
     .spinner {
       display: inline-block;
-      width: 40px;
-      height: 40px;
-      border: 4px solid rgba(255,255,255,0.3);
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--border);
       border-radius: 50%;
-      border-top-color: white;
-      animation: spin 1s linear infinite;
+      border-top-color: var(--text);
+      animation: spin 0.8s linear infinite;
     }
 
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
 
-    .results {
-      display: grid;
-      gap: 15px;
+    .loader p {
+      margin-top: 16px;
+      color: var(--text-tertiary);
+      font-size: 13px;
+      font-family: 'Geist Mono', monospace;
     }
 
+    /* Results */
     .results-header {
-      background: rgba(255,255,255,0.15);
-      padding: 15px 20px;
+      padding: 16px 20px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
       border-radius: 10px;
-      color: white;
-      backdrop-filter: blur(10px);
-      margin-bottom: 5px;
+      margin-bottom: 16px;
+      font-family: 'Geist Mono', monospace;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .results-header strong {
+      color: var(--text);
+      font-weight: 600;
     }
 
     .job-card {
-      background: white;
-      border-radius: 12px;
-      padding: 25px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      transition: transform 0.2s, box-shadow 0.2s;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 12px;
+      transition: border-color 0.15s;
     }
 
     .job-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      border-color: var(--border-hover);
+    }
+
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      gap: 16px;
+    }
+
+    .job-info {
+      flex: 1;
+      min-width: 0;
     }
 
     .job-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #333;
-      margin-bottom: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
     }
 
     .job-company {
-      font-size: 1.05rem;
-      color: #667eea;
-      font-weight: 600;
-      margin-bottom: 12px;
+      font-size: 14px;
+      color: var(--text-secondary);
     }
 
     .job-meta {
       display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-      margin-bottom: 15px;
-      font-size: 0.9rem;
-      color: #666;
-    }
-
-    .job-meta span {
-      display: flex;
+      gap: 12px;
       align-items: center;
-      gap: 5px;
+      font-size: 13px;
+      color: var(--text-tertiary);
+      font-family: 'Geist Mono', monospace;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
     }
 
     .source-tag {
       display: inline-block;
-      padding: 3px 10px;
-      background: #f0f0f0;
-      border-radius: 15px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: uppercase;
+      padding: 3px 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: lowercase;
+      font-family: 'Geist Mono', monospace;
     }
 
-    .source-lever { background: #ffd6cc; color: #cc4400; }
-    .source-greenhouse { background: #d4f4d4; color: #2d7d2d; }
-    .source-remoteok { background: #cce5ff; color: #0056b3; }
+    .source-lever { color: #f97316; border-color: #431a03; }
+    .source-greenhouse { color: #10b981; border-color: #052e20; }
+    .source-remoteok { color: #3b82f6; border-color: #0a1a3a; }
 
     .apply-btn {
       display: inline-block;
-      padding: 10px 25px;
-      background: #667eea;
-      color: white;
+      padding: 8px 16px;
+      background: transparent;
+      color: var(--text);
       text-decoration: none;
+      border: 1px solid var(--border);
       border-radius: 6px;
-      font-weight: 600;
-      transition: background 0.2s;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.15s;
+      font-family: inherit;
     }
 
     .apply-btn:hover {
-      background: #5568d3;
+      background: var(--text);
+      color: var(--bg);
     }
 
     .error {
-      background: #fff;
-      color: #d32f2f;
-      padding: 20px;
+      padding: 24px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
       border-radius: 10px;
+      color: var(--text-secondary);
       text-align: center;
+      font-size: 14px;
     }
 
+    /* Footer */
     footer {
-      text-align: center;
-      color: white;
-      margin-top: 40px;
-      padding: 20px;
-      font-size: 0.9rem;
-      opacity: 0.9;
+      margin-top: 80px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-tertiary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Geist Mono', monospace;
     }
 
     footer a {
-      color: white;
-      font-weight: 600;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    footer a:hover {
+      color: var(--text);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
     }
 
     @media (max-width: 768px) {
       .form-grid {
         grid-template-columns: 1fr;
       }
-      header h1 {
-        font-size: 2rem;
+      h1 {
+        font-size: 32px;
+      }
+      .container {
+        padding: 40px 20px 20px;
+      }
+      footer {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
       }
     }
   </style>
@@ -263,27 +373,31 @@
 <body>
   <div class="container">
     <header>
-      <h1>🚀 Job Board MCP</h1>
-      <p>Search jobs across Lever, Greenhouse, and RemoteOK in one place</p>
-      <div class="badges">
-        <span class="badge">3 Sources</span>
-        <span class="badge">1000+ Jobs</span>
-        <span class="badge">Real-time</span>
+      <div class="logo">
+        <div class="logo-mark">J</div>
+        <div class="logo-text">job-board-mcp</div>
+      </div>
+      <h1>Search jobs.<br>Across every platform.</h1>
+      <p class="subtitle">A unified search across Lever, Greenhouse, and RemoteOK. Real listings from real companies, all in one place.</p>
+      <div class="stats">
+        <div class="stat"><span class="stat-dot"></span>3 sources connected</div>
+        <div class="stat">1000+ jobs indexed</div>
+        <div class="stat">real-time results</div>
       </div>
     </header>
 
-    <div class="search-card">
+    <div class="search-form">
       <div class="form-grid">
         <div class="form-group">
-          <label for="query">Job Title / Keyword</label>
-          <input type="text" id="query" placeholder="e.g., Cloud Engineer, DevOps" value="Engineer">
+          <label for="query">query</label>
+          <input type="text" id="query" placeholder="cloud engineer, devops, etc." value="Engineer">
         </div>
         <div class="form-group">
-          <label for="location">Location</label>
-          <input type="text" id="location" placeholder="e.g., Remote, London" value="Remote">
+          <label for="location">location</label>
+          <input type="text" id="location" placeholder="remote, london, etc." value="Remote">
         </div>
         <div class="form-group">
-          <label for="limit">Results</label>
+          <label for="limit">limit</label>
           <select id="limit">
             <option value="5">5</option>
             <option value="10" selected>10</option>
@@ -291,19 +405,24 @@
             <option value="30">30</option>
           </select>
         </div>
-        <button id="searchBtn" onclick="searchJobs()">Search</button>
+        <button id="searchBtn" onclick="searchJobs()">Search →</button>
       </div>
     </div>
 
     <div id="loader" class="loader">
       <div class="spinner"></div>
-      <p style="margin-top: 15px;">Searching across job platforms...</p>
+      <p>fetching jobs...</p>
     </div>
 
-    <div id="results" class="results"></div>
+    <div id="results"></div>
 
     <footer>
-      <p>Built with ❤️ by <a href="https://github.com/Danialesss" target="_blank">Tun Danial</a> | <a href="https://github.com/Danialesss/job-board-mcp" target="_blank">View on GitHub</a></p>
+      <div>© 2026 job-board-mcp</div>
+      <div class="footer-links">
+        <a href="https://github.com/Danialesss/job-board-mcp" target="_blank">GitHub</a>
+        <a href="/api" target="_blank">API</a>
+        <a href="https://github.com/Danialesss" target="_blank">@danialesss</a>
+      </div>
     </footer>
   </div>
 
@@ -319,7 +438,7 @@
       const results = document.getElementById('results');
 
       if (!query) {
-        alert('Please enter a job title or keyword');
+        alert('Please enter a query');
         return;
       }
 
@@ -337,7 +456,7 @@
 
         renderResults(data.data);
       } catch (error) {
-        results.innerHTML = `<div class="error">❌ ${error.message}</div>`;
+        results.innerHTML = `<div class="error">${error.message}</div>`;
       } finally {
         btn.disabled = false;
         loader.classList.remove('active');
@@ -347,16 +466,14 @@
     function renderResults(dataText) {
       const results = document.getElementById('results');
       
-      // Parse the text response into structured job data
       const lines = dataText.split('\n');
       const headerMatch = lines[0].match(/Found (\d+) job listings.*\((.*)\)/);
       
       let html = '';
       if (headerMatch) {
-        html += `<div class="results-header">🎯 <strong>${headerMatch[1]} jobs found</strong> — ${headerMatch[2]}</div>`;
+        html += `<div class="results-header"><strong>${headerMatch[1]} results</strong> · ${headerMatch[2]}</div>`;
       }
 
-      // Split jobs (they start with "• **")
       const jobs = dataText.split('• **').slice(1);
       
       jobs.forEach(jobText => {
@@ -374,13 +491,17 @@
 
           html += `
             <div class="job-card">
-              <div class="job-title">${escapeHtml(title)}</div>
-              <div class="job-company">${escapeHtml(company)}</div>
+              <div class="job-header">
+                <div class="job-info">
+                  <div class="job-title">${escapeHtml(title)}</div>
+                  <div class="job-company">${escapeHtml(company)}</div>
+                </div>
+              </div>
               <div class="job-meta">
-                <span>📍 ${escapeHtml(location)}</span>
+                <span>${escapeHtml(location)}</span>
                 <span class="source-tag source-${source}">${source}</span>
               </div>
-              <a href="${escapeHtml(url)}" target="_blank" class="apply-btn">Apply Now →</a>
+              <a href="${escapeHtml(url)}" target="_blank" class="apply-btn">View Position →</a>
             </div>
           `;
         }
@@ -395,7 +516,6 @@
       return div.innerHTML;
     }
 
-    // Search on Enter key
     document.getElementById('query').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') searchJobs();
     });
@@ -403,7 +523,6 @@
       if (e.key === 'Enter') searchJobs();
     });
 
-    // Auto-search on load
     window.addEventListener('load', () => setTimeout(searchJobs, 500));
   </script>
 </body>
