@@ -1,5 +1,7 @@
 # Job Board MCP Server
 
+🌐 **Live Demo:** https://job-board-mcp.onrender.com/api/search?query=Engineer&location=Remote&limit=5
+
 A Model Context Protocol (MCP) server that aggregates job listings from multiple platforms into a single searchable interface. Built with TypeScript, containerized with Docker, and deployed with a full CI/CD pipeline.
 
 ![Tests](https://github.com/Danialesss/job-board-mcp/actions/workflows/test.yml/badge.svg)
