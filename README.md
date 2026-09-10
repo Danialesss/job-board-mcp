@@ -25,29 +25,22 @@ This also gave me an excuse to build something end-to-end: TypeScript, testing, 
 - **Automated CI/CD** — Every push runs tests and builds Docker images
 
 ## Architecture
-┌─────────────────────────────────────────────────────┐
-│ MCP Client (Claude Desktop, etc.) │
-└────────────────────┬────────────────────────────────┘
-│ MCP Protocol (stdio)
-↓
-┌─────────────────────────────────────────────────────┐
-│ MCP Server (Node.js + TypeScript) │
-│ ┌──────────────┐ ┌──────────────┐ │
-│ │ Tool │ │ Cache │ │
-│ │ Handlers │ │ Layer │ │
-│ └──────┬───────┘ └──────┬───────┘ │
-└────────┼─────────────────┼──────────────────────────┘
-│ │
-↓ ↓
-┌──────────┐ ┌──────────┐
-│ External │ │ SQLite │
-│ APIs │ │ Database │
-│ │ │ │
-│ • Lever │ │ (cache) │
-│ • Green- │ │ │
-│ house │ └──────────┘
-│ • RemOK │
-└──────────┘
+
+```mermaid
+graph TD
+    A[MCP Client<br/>Claude Desktop, etc.] -->|MCP Protocol stdio| B[MCP Server<br/>Node.js + TypeScript]
+    B --> C[Tool Handlers]
+    B --> D[Cache Layer]
+    C --> E[Lever API]
+    C --> F[Greenhouse API]
+    C --> G[RemoteOK API]
+    C --> D
+    D --> H[(SQLite Database)]
+    
+    style A fill:#4a90e2,stroke:#2c3e50,color:#fff
+    style B fill:#27ae60,stroke:#1e8449,color:#fff
+    style H fill:#e67e22,stroke:#a0522d,color:#fff
+```
 
 ## Tech Stack
 
