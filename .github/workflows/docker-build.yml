@@ -22,9 +22,10 @@ jobs:
         with:
           context: .
           push: false
+          load: true
           tags: job-board-mcp:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Verify image was built
-        run: docker images | grep job-board-mcp
+        run: docker images job-board-mcp
