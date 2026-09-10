@@ -3,6 +3,7 @@ import cors from "cors";
 import { searchJobs } from "./tools/searchJobs.js";
 import { getJobDetails } from "./tools/getJobDetails.js";
 import { initializeCache } from "./datasources/cache.js";
+import rateLimit from "express-rate-limit";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -10,6 +11,30 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Rate limiting - prevent API abuse
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Max 100 requests per window per IP
+  message: {
+    error: "Too many requests",
+    message: "Please try again in 15 minutes",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const searchLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 10, // Max 10 searches per minute per IP
+  message: {
+    error: "Too many search requests",
+    message: "Please slow down, max 10 searches per minute",
+  },
+});
+
+// Apply general rate limit to all /api routes
+app.use("/api", apiLimiter);
 
 // Initialize cache
 initializeCache();
@@ -39,8 +64,8 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
-// Search jobs endpoint
-app.get("/api/search", async (req: Request, res: Response) => {
+// Search jobs endpoint (extra rate limit)
+app.get("/api/search", searchLimiter, async (req: Request, res: Response) => {
   try {
     const query = req.query.query as string;
     const location = (req.query.location as string) || "Remote";
